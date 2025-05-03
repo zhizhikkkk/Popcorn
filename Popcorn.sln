@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Popcorn", "Popcorn\Popcorn.vcxproj", "{242553EA-C519-4EBF-9279-35C4A4637256}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Debug|x64.ActiveCfg = Debug|x64
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Debug|x64.Build.0 = Debug|x64
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Debug|x86.ActiveCfg = Debug|Win32
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Debug|x86.Build.0 = Debug|Win32
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Release|x64.ActiveCfg = Release|x64
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Release|x64.Build.0 = Release|x64
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Release|x86.ActiveCfg = Release|Win32
+		{242553EA-C519-4EBF-9279-35C4A4637256}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {488949AF-9054-4876-87E0-EF1D99A232A5}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,54 @@
+# Windows Desktop C++ application - .gitignore
+
+# Игнорируем скомпилированные бинарные файлы
+*.exe
+*.obj
+*.o
+*.dll
+*.lib
+*.pdb
+*.idb
+*.ilk
+*.exp
+
+# Игнорируем директории сборки
+build/
+Debug/
+Release/
+
+# Игнорируем настройки IDE (Visual Studio)
+.vs/
+.vscode/
+.idea/
+
+# Игнорируем временные файлы и кешированные файлы
+*.log
+*.user
+*.userosscache
+*.suo
+*.sdf
+*.cache
+*.bak
+*.swp
+
+# Игнорируем настройки компилятора и кеш
+*.vcxproj.user
+*.vcxproj.filters
+*.db
+
+# Игнорируем временные файлы от компилятора и линкера
+*.manifest
+*.pdb
+*.ilk
+*.bsc
+*.rpt
+
+# Игнорируем результаты сборки в других папках
+*.vspscc
+*.vssscc
+*.suo
+
+# Игнорируем фалы с лицензиями и метками
+LICENSE
+*.md
+
