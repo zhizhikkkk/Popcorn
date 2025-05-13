@@ -128,8 +128,12 @@ void Draw_Platform(HDC hdc, int x, int y)
 //Game scene rendering
 
 void Draw_Frame(HDC hdc)
-{
+{/*
 	Draw_Level(hdc);
-	Draw_Platform(hdc, 50, 100);
+	Draw_Platform(hdc, 50, 100);*/
+	SelectObject(hdc, Brick_Blue_Pen);
+	SelectObject(hdc, Brick_Blue_Brush);
+	Rectangle(hdc, 20 * Global_Scale, 100 * Global_Scale, (20 + 15) * Global_Scale, (100 + 7) * Global_Scale);
+	
 }
 
