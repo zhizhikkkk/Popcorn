@@ -98,8 +98,10 @@ void Init_Engine(HWND hwnd)
 	Redraw_Platform();
 }
 
+
+
 //-----------------------------------------------------------------------------------------------------------------------
-//Draw brick
+//Draw bricks
 
 void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
 {
