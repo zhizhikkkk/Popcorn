@@ -1,5 +1,13 @@
 #include "Engine.h"
 #include "framework.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+enum ELetter_Type {
+	ELT_None,
+	ELT_O
+};
+
 enum EBrick_Type
 {
 	EBT_None,
@@ -7,7 +15,7 @@ enum EBrick_Type
 	EBT_Blue
 };
 
-HPEN Brick_Pink_Pen, Brick_Blue_Pen, White_Pen;
+HPEN Brick_Pink_Pen, Brick_Blue_Pen, White_Pen, Letter_Pen;
 HBRUSH Brick_Pink_Brush, Brick_Blue_Brush, White_Brush;
 
 HPEN pen;
@@ -44,12 +52,14 @@ char Level_01[14][12] =
 //-----------------------------------------------------------------------------------------------------------------------
 void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN& pen, HBRUSH& brush)
 {
+	
 	pen = CreatePen(PS_SOLID, 0, RGB(r, g, b));
 	brush = CreateSolidBrush(RGB(r, g, b));
 }
 //-----------------------------------------------------------------------------------------------------------------------
 void Init()
 {
+	Letter_Pen = CreatePen(PS_SOLID, Global_Scale, RGB(255,255,255));
 	Create_Pen_Brush(255, 85, 255, Brick_Pink_Pen, Brick_Pink_Brush);
 	Create_Pen_Brush(85, 255, 255, Brick_Blue_Pen, Brick_Blue_Brush);
 	Create_Pen_Brush(255, 255, 255, White_Pen, White_Brush);
@@ -88,6 +98,107 @@ void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
+
+void Set_Brick_Letter_Color(bool is_switch_color, HPEN& front_pen, HBRUSH& front_brush, HPEN& back_pen, HBRUSH& back_brush)
+{
+	if (is_switch_color) {
+		front_pen = Brick_Pink_Pen;
+		front_brush = Brick_Pink_Brush;
+		back_pen = Brick_Blue_Pen;
+		back_brush = Brick_Blue_Brush;
+	}
+	else {
+		front_pen = Brick_Blue_Pen;
+		front_brush = Brick_Blue_Brush;
+
+		back_pen = Brick_Pink_Pen;
+		back_brush = Brick_Pink_Brush;
+	}
+}
+//-----------------------------------------------------------------------------------------------------------------------
+
+void Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type,ELetter_Type letter_type, int rotation_step)
+{
+	bool is_switch_color;
+	double offset;
+	double rotation_angle;
+	int brick_half_height = (Brick_Height * Global_Scale / 2);
+	int back_part_offset;
+	HPEN front_pen, back_pen;
+	HBRUSH front_brush, back_brush;
+	if (!(brick_type == EBT_Blue || brick_type == EBT_Pink))
+		return;
+
+	rotation_step %= 16;
+
+	if (rotation_step < 8)
+		rotation_angle = 2.0 * M_PI / 16 * (double)rotation_step;
+	else
+		rotation_angle = 2.0 * M_PI / 16 * (double)(8 - rotation_step);
+
+	if (rotation_step > 4 && rotation_step <= 12) {
+		is_switch_color = brick_type == EBT_Blue;
+	}
+	else
+	{
+		is_switch_color = brick_type == EBT_Pink;
+	}
+	Set_Brick_Letter_Color(is_switch_color, front_pen, front_brush, back_pen, back_brush);
+
+	if (rotation_step == 4 || rotation_step == 12)
+	{
+		//print background
+		SelectObject(hdc, back_pen);
+		SelectObject(hdc, back_brush);
+
+		Rectangle(hdc, x, y + brick_half_height - Global_Scale, x + Brick_Width * Global_Scale, y + brick_half_height);
+		//print foreground
+		SelectObject(hdc, front_pen);
+		SelectObject(hdc, front_brush);
+
+		Rectangle(hdc, x, y + brick_half_height, x + Brick_Width * Global_Scale, y + brick_half_height + Global_Scale - 1);
+	}
+	else
+	{
+		SetGraphicsMode(hdc, GM_ADVANCED);
+		//set up the letter rotation matrix
+		XFORM xform, old_xform;
+		xform.eM11 = 1.0f;
+		xform.eM12 = 0.0f;
+		xform.eM21 = 0.0f;
+		xform.eM22 = (float)cos(rotation_angle);
+		xform.eDx = (float)x;
+		xform.eDy = (float)y + (float)brick_half_height;
+
+		offset = 3.0 * (1.0 - fabs(xform.eM22)) * (double)Global_Scale;
+		back_part_offset = (int)round(offset);
+
+		GetWorldTransform(hdc, &old_xform);
+		SetWorldTransform(hdc, &xform);
+		//print background
+		SelectObject(hdc, back_pen);
+		SelectObject(hdc, back_brush);
+
+		Rectangle(hdc, 0, -brick_half_height - back_part_offset, Brick_Width * Global_Scale, brick_half_height - back_part_offset);
+		//print foreground
+		SelectObject(hdc, front_pen);
+		SelectObject(hdc, front_brush);
+		Rectangle(hdc, 0, -brick_half_height, Brick_Width * Global_Scale, brick_half_height);
+
+		if (rotation_step > 4 && rotation_step <= 12)
+		{
+			if (letter_type == ELT_O) {
+				SelectObject(hdc, Letter_Pen);
+				Ellipse(hdc, 0 + 5 * Global_Scale, (-5 * Global_Scale) / 2, 0 + 10 * Global_Scale, 5 * Global_Scale / 2);
+			}
+		}
+
+		SetWorldTransform(hdc, &old_xform);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------------------------------
 //Bricks rendering
 void Draw_Level(HDC hdc)
 {
@@ -110,7 +221,7 @@ void Draw_Platform(HDC hdc, int x, int y)
 	SelectObject(hdc, Brick_Blue_Brush);
 	Ellipse(hdc, x * Global_Scale, y * Global_Scale, (x + Circle_Size) * Global_Scale, (y + Circle_Size) * Global_Scale);
 	Ellipse(hdc, (x + Inner_Width) * Global_Scale, 100 * Global_Scale, (x + Circle_Size + Inner_Width) * Global_Scale, (y + Circle_Size) * Global_Scale);
-	
+
 	//Drawing highlight
 	SelectObject(hdc, White_Pen);
 	SelectObject(hdc, White_Brush);
@@ -128,12 +239,15 @@ void Draw_Platform(HDC hdc, int x, int y)
 //Game scene rendering
 
 void Draw_Frame(HDC hdc)
-{/*
-	Draw_Level(hdc);
+{
+	/*Draw_Level(hdc);
 	Draw_Platform(hdc, 50, 100);*/
-	SelectObject(hdc, Brick_Blue_Pen);
-	SelectObject(hdc, Brick_Blue_Brush);
-	Rectangle(hdc, 20 * Global_Scale, 100 * Global_Scale, (20 + 15) * Global_Scale, (100 + 7) * Global_Scale);
-	
+	int i;
+	for (i = 0; i < 16; i++)
+	{
+		Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 100, EBT_Blue,ELT_O, i);
+		Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Pink, ELT_O, i);
+	}
+
 }
 
