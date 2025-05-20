@@ -88,7 +88,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	if (hWnd == 0)
 		return FALSE;
 
-	Init();
+	Init_Engine(hWnd);
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -120,10 +120,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		Draw_Frame(hdc);
+		Draw_Frame(hdc, ps.rcPaint);
 		EndPaint(hWnd, &ps);
 	}
 	break;
+	case WM_KEYDOWN:
+		switch (wParam) {
+		case VK_LEFT:
+			return On_Key_Down(EKT_Left);
+		case VK_RIGHT:
+			return  On_Key_Down(EKT_Right);
+		case VK_SPACE:
+			return On_Key_Down(EKT_Space);
+		}
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
